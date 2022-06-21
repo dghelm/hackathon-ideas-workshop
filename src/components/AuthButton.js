@@ -14,17 +14,18 @@ import { openAuthWindow } from 'libkernel';
 // import { IdentityDAC } from 'skynet-dacs-library';
 
 const AuthButton = ({ userAuthStatus, bootloaderLoaded, isKernelLoaded }) => {
-  //   useEffect(() => {
-  //     const getUserID = async () => {
-  //       let identityDAC = new IdentityDAC();
-  //       let userID = await identityDAC.userID();
-  //       console.log('userID: ', userID);
-  //     };
+  useEffect(() => {
+    //     const getUserID = async () => {
+    //       let identityDAC = new IdentityDAC();
+    //       let userID = await identityDAC.userID();
+    //       console.log('userID: ', userID);
+    //     };
+    console.log('Now get userid');
 
-  //     if (userAuthStatus) {
-  //       getUserID();
-  //     }
-  //   }, [userAuthStatus]);
+    //     if (userAuthStatus) {
+    //       getUserID();
+    //     }
+  }, [userAuthStatus]);
 
   return (
     <HStack spacing="4">

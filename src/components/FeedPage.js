@@ -1,13 +1,4 @@
-import {
-  Box,
-  Button,
-  Container,
-  Divider,
-  Heading,
-  Stack,
-  Text,
-  useBreakpointValue,
-} from '@chakra-ui/react';
+import { Box, Divider, Stack } from '@chakra-ui/react';
 import Mentors from './Mentors';
 import IdeaFeed from './IdeaFeed';
 

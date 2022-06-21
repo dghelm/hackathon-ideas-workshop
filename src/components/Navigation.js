@@ -1,5 +1,4 @@
 import {
-  Avatar,
   Box,
   Button,
   ButtonGroup,
@@ -11,8 +10,7 @@ import {
   useBreakpointValue,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { FiHelpCircle, FiMenu, FiSearch, FiSettings } from 'react-icons/fi';
-import { FaUser, FaUserCog } from 'react-icons/fa';
+import { FiMenu } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import AuthButton from './AuthButton';
 // import { Logo } from '../Logo';

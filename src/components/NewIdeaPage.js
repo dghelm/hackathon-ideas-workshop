@@ -1,4 +1,4 @@
-import { Box, Container, Stack, StackDivider, Text } from '@chakra-ui/react';
+import { Box, Stack, StackDivider, Text } from '@chakra-ui/react';
 import NewIdeaCard from './NewIdeaCard';
 
 const NewIdeaPage = () => {

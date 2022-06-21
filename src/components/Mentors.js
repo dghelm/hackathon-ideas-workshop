@@ -2,7 +2,6 @@ import {
   Box,
   Button,
   Container,
-  Divider,
   Stack,
   Text,
   HStack,
