@@ -9,58 +9,98 @@ import {
   AvatarBadge,
   StackDivider,
   Center,
+  Tag,
 } from '@chakra-ui/react';
 
 import { FaPlus } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import {
+  eventOptions,
+  prizeTrackOptions,
+  techStackOptions,
+} from './NewIdeaCard';
 
-export const members = [
+export const sampleIdeas = [
   {
-    id: '1',
-    name: 'Christian Nwamba',
-    handle: '@christian',
-    avatarUrl: 'https://bit.ly/code-beast',
-    status: 'active',
-    message: 'Some message',
-    lastSeen: 'just now',
+    id: 12345,
+    userId: 'fd06ecf9d4adec6303461382225a294cc49e8eae542e1d8623dc271284e61cab',
+    userName: 'dghelm',
+    avatarUrl:
+      'https://siasky.net/MABJtvAWAy6owdjwoEhWJDMy1C6uOkqYee4WgCiE6IYMpA',
+    title: 'Fungible NFTs',
+    text: 'I want to make a really cool platform to revolutionizing NFTs by introducing that which they lack: fungibility. I have a rough outline of the solidity code, but would love help with creating a user interface.',
+    ext: {
+      event: 'eth-newyork',
+      prizeTrack: 'public-goods',
+      techStack: ['skynet', 'react', 'ethersjs'],
+      seekingTeam: true,
+    },
+    ts: 0, // maybe we'll use postedAt instead
   },
   {
-    id: '2',
-    name: 'Kent C. Dodds',
-    handle: '@kent',
-    avatarUrl: 'https://bit.ly/kent-c-dodds',
-    status: 'active',
-    message: 'Some message',
-    lastSeen: '2hr ago',
-  },
-  {
-    id: '3',
-    name: 'Prosper Otemuyiwa',
-    handle: '@prosper',
-    avatarUrl: 'https://bit.ly/prosper-baba',
-    status: 'active',
-    message: 'Some message',
-    lastSeen: '3hr ago',
-  },
-  {
-    id: '4',
-    name: 'Ryan Florence',
-    handle: '@ryan',
-    avatarUrl: 'https://bit.ly/ryan-florence',
-    status: 'active',
-    message: 'Some message',
-    lastSeen: '4hr ago',
-  },
-  {
-    id: '5',
-    name: 'Segun Adebayo',
-    handle: '@segun',
-    avatarUrl: 'https://bit.ly/sage-adebayo',
-    status: 'inactive',
-    message: 'Some message',
-    lastSeen: '5hr ago',
+    id: 123456,
+    userId: 'faceecf9d4adec6303461382225a294cc49e8eae542e1d8623dc271284e61cab',
+    userName: '',
+    avatarUrl: '',
+    title: 'Decentralized API repository',
+    text: 'I want to make a permissionless way for developers to add their Kernel modules to a public repository, similar to npm.',
+    ext: {
+      event: 'eth-newyork',
+      prizeTrack: 'skynet',
+      techStack: ['skynet', 'flutter'],
+      seekingTeam: false,
+    },
+    ts: 0, // maybe we'll use postedAt instead
   },
 ];
+
+const SingleIdea = ({ avatarUrl, title, userName, userId, ts, text, ext }) => {
+  return (
+    <Stack fontSize="sm" px="4" spacing="4">
+      <Stack direction="row" justify="space-between" spacing="4">
+        <HStack spacing="3">
+          <Avatar src={avatarUrl} boxSize="16" />
+          <Box>
+            <Text fontSize="md" fontWeight="bold" color="emphasized">
+              {title}
+            </Text>
+            <Text pb="1">{userName ? `@${userName}` : userId}</Text>
+            <Tag size="sm" variant="outline">
+              {eventOptions[ext.event]}
+            </Tag>
+            <Tag size="sm">{prizeTrackOptions[ext.prizeTrack]}</Tag>
+            {ext.seekingTeam && (
+              <Tag size="sm" ml="2" colorScheme="green">
+                Seeking Team
+              </Tag>
+            )}
+          </Box>
+        </HStack>
+        <Text color="muted">{ts}</Text>
+      </Stack>
+      <Text
+        color="muted"
+        sx={{
+          WebkitBoxOrient: 'vertical',
+          WebkitLineClamp: '2',
+          overflow: 'hidden',
+          display: '-webkit-box',
+        }}
+      >
+        {text}
+      </Text>
+      <HStack>
+        {ext.techStack.map((item) => {
+          return (
+            <Tag key={item} variant="solid" size="md">
+              {techStackOptions[item]}
+            </Tag>
+          );
+        })}
+      </HStack>
+    </Stack>
+  );
+};
 
 const IdeaFeed = () => {
   let navigate = useNavigate();
@@ -100,42 +140,8 @@ const IdeaFeed = () => {
           >
             <Box bg="bg-surface" py="4">
               <Stack divider={<StackDivider />} spacing="4">
-                {members.map((member) => (
-                  <Stack key={member.id} fontSize="sm" px="4" spacing="4">
-                    <Stack direction="row" justify="space-between" spacing="4">
-                      <HStack spacing="3">
-                        <Avatar src={member.avatarUrl} boxSize="10">
-                          <AvatarBadge
-                            boxSize="4"
-                            bg={
-                              member.status === 'active' ? 'success' : 'subtle'
-                            }
-                          />
-                        </Avatar>
-                        <Box>
-                          <Text fontWeight="medium" color="emphasized">
-                            {member.name}
-                          </Text>
-                          <Text color="muted">{member.handle}</Text>
-                        </Box>
-                      </HStack>
-                      <Text color="muted">{member.lastSeen}</Text>
-                    </Stack>
-                    <Text
-                      color="muted"
-                      sx={{
-                        WebkitBoxOrient: 'vertical',
-                        WebkitLineClamp: '2',
-                        overflow: 'hidden',
-                        display: '-webkit-box',
-                      }}
-                    >
-                      Candy donut tart pudding macaroon. Soufflé carrot cake
-                      choc late cake biscuit jelly beans chupa chups dragée.
-                      Cupcake toffee gummies lemon drops halvah. Cookie
-                      fruitcake jelly beans gingerbread soufflé marshmallow.
-                    </Text>
-                  </Stack>
+                {sampleIdeas.map((idea) => (
+                  <SingleIdea key={idea.id} {...idea} />
                 ))}
               </Stack>
             </Box>

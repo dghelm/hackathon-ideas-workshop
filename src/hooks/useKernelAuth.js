@@ -1,6 +1,11 @@
 import { useState, useEffect } from 'react';
-import { init, loginComplete, logoutComplete, openAuthWindow } from 'libkernel';
-import { kernelLoaded } from 'libkernel/dist/auth'; //this should be exported from libkernel
+import {
+  init,
+  kernelLoaded,
+  loginComplete,
+  logoutComplete,
+  openAuthWindow,
+} from 'libkernel';
 
 const useKernelAuth = () => {
   const [userAuthStatus, setUserAuthStatus] = useState(false);
@@ -15,20 +20,27 @@ const useKernelAuth = () => {
   }, []);
 
   const checkAuthStatus = async () => {
-    await init();
+    // mock load success for testing UI starting points
+
     setBootloaderLoaded(true);
+    setUserAuthStatus(true);
+    setIsKernelLoaded(true);
+    return;
 
-    loginComplete().then(() => {
-      setUserAuthStatus(true);
-    });
+    // await init();
+    // setBootloaderLoaded(true);
 
-    kernelLoaded().then(() => {
-      setIsKernelLoaded(true);
-    });
+    // loginComplete().then(() => {
+    //   setUserAuthStatus(true);
+    // });
 
-    logoutComplete().then(() => {
-      setUserAuthStatus(false);
-    });
+    // kernelLoaded().then(() => {
+    //   setIsKernelLoaded(true);
+    // });
+
+    // logoutComplete().then(() => {
+    //   setUserAuthStatus(false);
+    // });
   };
 
   const login = () => {
