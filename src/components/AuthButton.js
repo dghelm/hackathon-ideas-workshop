@@ -1,31 +1,22 @@
-import { useEffect } from 'react';
 import {
   Avatar,
+  Box,
   Button,
   ButtonGroup,
   Fade,
   HStack,
+  Icon,
   IconButton,
   Skeleton,
+  Spinner,
   Text,
 } from '@chakra-ui/react';
-import { FaUserCog } from 'react-icons/fa';
+import { FaUserCog, FaUserCircle } from 'react-icons/fa';
 import { openAuthWindow } from 'libkernel';
-// import { IdentityDAC } from 'skynet-dacs-library';
+import useDACs from '../hooks/useDACs';
 
 const AuthButton = ({ userAuthStatus, bootloaderLoaded, isKernelLoaded }) => {
-  useEffect(() => {
-    //     const getUserID = async () => {
-    //       let identityDAC = new IdentityDAC();
-    //       let userID = await identityDAC.userID();
-    //       console.log('userID: ', userID);
-    //     };
-    console.log('Now get userid');
-
-    //     if (userAuthStatus) {
-    //       getUserID();
-    //     }
-  }, [userAuthStatus]);
+  const { userProfile, avatar } = useDACs(userAuthStatus, isKernelLoaded);
 
   return (
     <HStack spacing="4">
@@ -43,15 +34,15 @@ const AuthButton = ({ userAuthStatus, bootloaderLoaded, isKernelLoaded }) => {
           </Fade>
           <ButtonGroup variant="ghost" spacing="1">
             {/* <IconButton
-                  icon={<FiSearch fontSize="1.25rem" />}
-                  aria-label="Search"
-                />
-                <IconButton
                   icon={<FiSettings fontSize="1.25rem" />}
                   aria-label="Settings"
                 /> */}
             <a
-              href="https://rivernet.hns.siasky.net/#/"
+              href={
+                userProfile?.userId
+                  ? `https://rivernet.hns.siasky.net/#/user/${userProfile?.userId}`
+                  : 'https://rivernet.hns.siasky.net/'
+              }
               target="_blank"
               rel="noreferrer"
             >
@@ -62,11 +53,21 @@ const AuthButton = ({ userAuthStatus, bootloaderLoaded, isKernelLoaded }) => {
             </a>
           </ButtonGroup>
 
-          <Avatar
-            boxSize="10"
-            name="Christoph Winston"
-            src="https://tinyurl.com/yhkm2ek8"
-          />
+          <Box>
+            {!userProfile?.userId && (
+              <Spinner size="md" speed="0.25s" color="green.200" />
+            )}
+            {userProfile?.userId && !avatar && (
+              <Icon as={FaUserCircle} w={8} h={8} color="gray.300" />
+            )}
+            {userProfile?.userId && avatar && (
+              <Avatar
+                boxSize="10"
+                name={userProfile?.username || userProfile?.userId || ''}
+                src={avatar}
+              />
+            )}
+          </Box>
         </>
       )}
     </HStack>

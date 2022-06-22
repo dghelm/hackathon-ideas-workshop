@@ -27,7 +27,12 @@ function App() {
           <Routes>
             <Route
               path="/"
-              element={<FeedPage userAuthStatus={userAuthStatus} />}
+              element={
+                <FeedPage
+                  userAuthStatus={userAuthStatus}
+                  isKernelLoaded={isKernelLoaded}
+                />
+              }
             />
             <Route
               path="/new-idea"

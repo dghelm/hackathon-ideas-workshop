@@ -124,8 +124,8 @@ const IdeaFeed = () => {
                     <Text
                       color="muted"
                       sx={{
-                        '-webkit-box-orient': 'vertical',
-                        '-webkit-line-clamp': '2',
+                        WebkitBoxOrient: 'vertical',
+                        WebkitLineClamp: '2',
                         overflow: 'hidden',
                         display: '-webkit-box',
                       }}

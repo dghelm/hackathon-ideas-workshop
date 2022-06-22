@@ -5,36 +5,63 @@ import {
   Flex,
   FormControl,
   FormLabel,
+  HStack,
   Input,
   Select,
   Stack,
   Switch,
+  Tag,
+  TagLabel,
+  TagCloseButton,
   Textarea,
   useColorModeValue,
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-// import { FeedDAC } from 'skynet-dacs-library';
+import useDACs from '../hooks/useDACs';
+import _ from 'lodash';
+
+export const eventOptions = { 'eth-newyork': 'ETHNewYork' };
+export const prizeTrackOptions = {
+  skynet: 'Skynet Labs',
+  'public-goods': 'Public Goods',
+};
+export const techStackOptions = {
+  skynet: 'Skynet',
+  solidity: 'Solidity',
+  react: 'React',
+  flutter: 'Flutter',
+  vue: 'Vue',
+  hardhat: 'Hardhat',
+  ethersjs: 'Ethers.js',
+  ts: 'Typescript',
+};
 
 const NewIdeaCard = (props) => {
   const [title, setTitle] = useState('');
   const [text, setText] = useState('');
   const [event, setEvent] = useState('');
   const [prizeTrack, setPrizeTrack] = useState('');
-  const [techStack, setTechStack] = useState('');
+  const [techStack, setTechStack] = useState([]);
   const [seekingTeam, setSeekingTeam] = useState('');
 
   const [creatingPost, setCreatingPost] = useState(false);
 
   const navigate = useNavigate();
+  const { createPost, userProfile } = useDACs();
 
-  const createPost = async () => {
+  const postNewIdea = async () => {
     setCreatingPost(true);
-    //     const feedDAC = new FeedDAC();
-    //     const post = { title: formData.title, text: formData.text };
-    //     const okay = await feedDAC.createPost(post);
-    //     console.log('okay: ', okay);
-    setTimeout(() => navigate('/'), 5000);
+    await createPost({
+      title,
+      text,
+      event,
+      prizeTrack,
+      techStack,
+      seekingTeam: seekingTeam ? 'true' : 'false',
+    });
+    setCreatingPost(false);
+    setTimeout(() => navigate('/'), 1000);
   };
 
   return (
@@ -54,9 +81,9 @@ const NewIdeaCard = (props) => {
           <FormControl id="userID">
             <FormLabel>MySky UserID</FormLabel>
             <Input
-              defaultValue="Log In to Submit a New Idea"
-              value="Current MySky UserId"
-              disabled="true"
+              value={userProfile?.userId || ''}
+              placeholder="Log In to Submit a New Idea"
+              disabled={true}
             />
           </FormControl>
         </Stack>
@@ -73,7 +100,7 @@ const NewIdeaCard = (props) => {
           <FormLabel>Description</FormLabel>
           <Textarea
             isDisabled={creatingPost}
-            placeholder="Name of Project"
+            placeholder="Describe what you'll be building"
             value={text}
             onChange={(e) => setText(e.target.value)}
           />
@@ -87,7 +114,13 @@ const NewIdeaCard = (props) => {
               value={event}
               onChange={(e) => setEvent(e.target.value)}
             >
-              <option value="eth-newyork">ETHNewYork</option>
+              {Object.entries(eventOptions).map(([key, value]) => {
+                return (
+                  <option key={key} value={key}>
+                    {value}
+                  </option>
+                );
+              })}
             </Select>
           </FormControl>
           <FormControl id="track">
@@ -98,8 +131,13 @@ const NewIdeaCard = (props) => {
               value={prizeTrack}
               onChange={(e) => setPrizeTrack(e.target.value)}
             >
-              <option value="skynet">Skynet</option>
-              <option value="public-goods">Public Goods</option>
+              {Object.entries(prizeTrackOptions).map(([key, value]) => {
+                return (
+                  <option key={key} value={key}>
+                    {value}
+                  </option>
+                );
+              })}
             </Select>
           </FormControl>
           <FormControl id="tech-stack">
@@ -107,17 +145,18 @@ const NewIdeaCard = (props) => {
             <Select
               isDisabled={creatingPost}
               placeholder="Select option"
-              value={techStack}
-              onChange={(e) => setTechStack(e.target.value)}
+              value=""
+              onChange={(e) =>
+                setTechStack(_.uniq([...techStack, e.target.value]))
+              }
             >
-              <option value="skynet">Skynet</option>
-              <option value="solidity">Solidity</option>
-              <option value="react">React</option>
-              <option value="flutter">Flutter</option>
-              <option value="vue">Vue</option>
-              <option value="hardhat">Hardhat</option>
-              <option value="ethers-js">Ethers.js</option>
-              <option value="ts">Typescript</option>
+              {Object.entries(techStackOptions).map(([key, value]) => {
+                return (
+                  <option key={key} value={key}>
+                    {value}
+                  </option>
+                );
+              })}
             </Select>
           </FormControl>
           <FormControl>
@@ -134,10 +173,24 @@ const NewIdeaCard = (props) => {
       </Stack>
       <Divider />
       <Flex direction="row-reverse" py="4" px={{ base: '4', md: '6' }}>
-        <Button onClick={createPost} variant="primary" disabled={creatingPost}>
+        <Button onClick={postNewIdea} variant="primary" disabled={creatingPost}>
           {creatingPost && 'Saving to Feed...'}
           {!creatingPost && 'Create Idea Entry'}
         </Button>
+        <HStack px="4">
+          {techStack.map((item) => {
+            return (
+              <Tag key={item} variant="solid" size="md">
+                <TagLabel>{techStackOptions[item]}</TagLabel>
+                <TagCloseButton
+                  onClick={() => {
+                    setTechStack(_.without(techStack, item));
+                  }}
+                />
+              </Tag>
+            );
+          })}
+        </HStack>
       </Flex>
     </Box>
   );

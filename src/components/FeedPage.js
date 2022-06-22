@@ -2,7 +2,7 @@ import { Box, Divider, Stack } from '@chakra-ui/react';
 import Mentors from './Mentors';
 import IdeaFeed from './IdeaFeed';
 
-const FeedPage = () => {
+const FeedPage = ({ isKernelLoaded, userAuthStatus }) => {
   return (
     <Box
       as="section"
@@ -11,7 +11,7 @@ const FeedPage = () => {
       pb={{ base: '12', md: '24' }}
     >
       <Stack spacing={16}>
-        <Mentors />
+        <Mentors {...{ isKernelLoaded, userAuthStatus }} />
         <Divider />
         <IdeaFeed />
       </Stack>
