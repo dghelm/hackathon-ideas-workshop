@@ -20,27 +20,27 @@ const useKernelAuth = () => {
   }, []);
 
   const checkAuthStatus = async () => {
-    // mock load success for testing UI starting points
+    // // mock load success for testing UI starting points
 
-    setBootloaderLoaded(true);
-    setUserAuthStatus(true);
-    setIsKernelLoaded(true);
-    return;
-
-    // await init();
     // setBootloaderLoaded(true);
+    // setUserAuthStatus(true);
+    // setIsKernelLoaded(true);
+    // return;
 
-    // loginComplete().then(() => {
-    //   setUserAuthStatus(true);
-    // });
+    await init();
+    setBootloaderLoaded(true);
 
-    // kernelLoaded().then(() => {
-    //   setIsKernelLoaded(true);
-    // });
+    loginComplete().then(() => {
+      setUserAuthStatus(true);
+    });
 
-    // logoutComplete().then(() => {
-    //   setUserAuthStatus(false);
-    // });
+    kernelLoaded().then(() => {
+      setIsKernelLoaded(true);
+    });
+
+    logoutComplete().then(() => {
+      setUserAuthStatus(false);
+    });
   };
 
   const login = () => {

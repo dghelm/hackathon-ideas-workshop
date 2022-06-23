@@ -1,7 +1,7 @@
 import { Box, Stack, StackDivider, Text } from '@chakra-ui/react';
 import NewIdeaCard from './NewIdeaCard';
 
-const NewIdeaPage = () => {
+const NewIdeaPage = ({ userAuthStatus, isKernelLoaded }) => {
   return (
     <Stack spacing="5" divider={<StackDivider />}>
       <Stack
@@ -17,7 +17,10 @@ const NewIdeaPage = () => {
             Include lots of details and info about your stack.
           </Text>
         </Box>
-        <NewIdeaCard maxW={{ lg: '3xl' }} />
+        <NewIdeaCard
+          maxW={{ lg: '3xl' }}
+          {...{ userAuthStatus, isKernelLoaded }}
+        />
       </Stack>
     </Stack>
   );

@@ -36,7 +36,12 @@ function App() {
             />
             <Route
               path="/new-idea"
-              element={<NewIdeaPage userAuthStatus={userAuthStatus} />}
+              element={
+                <NewIdeaPage
+                  userAuthStatus={userAuthStatus}
+                  isKernelLoaded={isKernelLoaded}
+                />
+              }
             />
           </Routes>
         )}

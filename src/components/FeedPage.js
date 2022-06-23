@@ -13,7 +13,7 @@ const FeedPage = ({ isKernelLoaded, userAuthStatus }) => {
       <Stack spacing={16}>
         <Hackers {...{ isKernelLoaded, userAuthStatus }} />
         <Divider />
-        <IdeaFeed />
+        <IdeaFeed {...{ isKernelLoaded, userAuthStatus }} />
       </Stack>
     </Box>
   );

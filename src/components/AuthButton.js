@@ -13,10 +13,10 @@ import {
 } from '@chakra-ui/react';
 import { FaUserCog, FaUserCircle } from 'react-icons/fa';
 import { openAuthWindow } from 'libkernel';
-import useDACs from '../hooks/useDACs';
+import { useProfile } from '../hooks/useDACs';
 
 const AuthButton = ({ userAuthStatus, bootloaderLoaded, isKernelLoaded }) => {
-  const { userProfile, avatar } = useDACs(userAuthStatus, isKernelLoaded);
+  const { userProfile, avatar } = useProfile(userAuthStatus, isKernelLoaded);
 
   return (
     <HStack spacing="4">

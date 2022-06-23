@@ -18,24 +18,13 @@ import {
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import useDACs from '../hooks/useDACs';
+import { useProfile, createPost } from '../hooks/useDACs';
+import {
+  prizeTrackOptions,
+  eventOptions,
+  techStackOptions,
+} from '../data/appData';
 import _ from 'lodash';
-
-export const eventOptions = { 'eth-newyork': 'ETHNewYork' };
-export const prizeTrackOptions = {
-  skynet: 'Skynet Labs',
-  'public-goods': 'Public Goods',
-};
-export const techStackOptions = {
-  skynet: 'Skynet',
-  solidity: 'Solidity',
-  react: 'React',
-  flutter: 'Flutter',
-  vue: 'Vue',
-  hardhat: 'Hardhat',
-  ethersjs: 'Ethers.js',
-  ts: 'Typescript',
-};
 
 const NewIdeaCard = (props) => {
   const [title, setTitle] = useState('');
@@ -48,7 +37,7 @@ const NewIdeaCard = (props) => {
   const [creatingPost, setCreatingPost] = useState(false);
 
   const navigate = useNavigate();
-  const { createPost, userProfile } = useDACs();
+  const { userProfile } = useProfile(props.authStatus, props.isKernelLoaded);
 
   const postNewIdea = async () => {
     setCreatingPost(true);
@@ -173,7 +162,11 @@ const NewIdeaCard = (props) => {
       </Stack>
       <Divider />
       <Flex direction="row-reverse" py="4" px={{ base: '4', md: '6' }}>
-        <Button onClick={postNewIdea} variant="primary" disabled={creatingPost}>
+        <Button
+          onClick={postNewIdea}
+          variant="primary"
+          disabled={creatingPost || !props?.userAuthStatus}
+        >
           {creatingPost && 'Saving to Feed...'}
           {!creatingPost && 'Create Idea Entry'}
         </Button>

@@ -6,7 +6,7 @@ Specifically, it builds on the `skynet-dacs-library` to call Kernel modules usin
 
 The repo contains the code for both mock data and a functional application for doing the following:
 
-1. Authenticate with Skynet Kernel
+1. Authenticate with Skynet Kernel, then get user's public userId using the Identity DAC
 2. Get your public user profile using the Profile DAC
 3. Follow a group of user by adding them to your friend list, using the Social DAC
 4. Add a post to your feed, with application specific metadata using the Feed DAC
