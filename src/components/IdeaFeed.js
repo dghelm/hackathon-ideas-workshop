@@ -18,10 +18,12 @@ import { useNavigate } from 'react-router-dom';
 
 const IdeaFeed = ({ isKernelLoaded, userAuthStatus }) => {
   let navigate = useNavigate();
-  const { ideasList, loadingProgress } = useIdeasFeed(
-    userAuthStatus,
-    isKernelLoaded
-  );
+  const ideasList = [];
+  const loadingProgress = 100;
+  // const { ideasList, loadingProgress } = useIdeasFeed(
+  //   userAuthStatus,
+  //   isKernelLoaded
+  // );
 
   return (
     <Container>
