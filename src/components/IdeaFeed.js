@@ -18,12 +18,12 @@ import { useNavigate } from 'react-router-dom';
 
 const IdeaFeed = ({ isKernelLoaded, userAuthStatus }) => {
   let navigate = useNavigate();
-  const ideasList = [];
-  const loadingProgress = 100;
-  // const { ideasList, loadingProgress } = useIdeasFeed(
-  //   userAuthStatus,
-  //   isKernelLoaded
-  // );
+  // const ideasList = [];
+  // const loadingProgress = 0;
+  const { ideasList, loadingProgress, userProfiles } = useIdeasFeed(
+    userAuthStatus,
+    isKernelLoaded
+  );
 
   return (
     <Container>
@@ -62,7 +62,7 @@ const IdeaFeed = ({ isKernelLoaded, userAuthStatus }) => {
             <Box bg="bg-surface" py="4">
               <Stack divider={<StackDivider />} spacing="4">
                 {ideasList.map((idea) => (
-                  <SingleIdea key={idea.id} {...idea} />
+                  <SingleIdea key={idea.ts} {...idea} userProfile={userProfiles[idea.userId]} />
                 ))}
                 <Fade in={loadingProgress < 100}>
                   <Progress

@@ -8,6 +8,12 @@ import { BrowserRouter } from 'react-router-dom';
 import { theme } from '@chakra-ui/pro-theme';
 import '@fontsource/inter/variable.css';
 
+// setup human-friendly time for posts
+import TimeAgo from 'javascript-time-ago'
+import en from 'javascript-time-ago/locale/en.json'
+TimeAgo.addDefaultLocale(en)
+
+
 const myTheme = extendTheme(
   {
     colors: { ...theme.colors, brand: theme.colors.green },

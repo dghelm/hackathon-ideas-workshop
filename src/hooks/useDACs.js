@@ -1,5 +1,5 @@
 import { useState, useEffect, useReducer } from 'react';
-import { FeedDAC, IdentityDAC, ProfileDAC } from 'skynet-dacs-library';
+import { FeedDAC, IdentityDAC, ProfileDAC, SocialDAC } from 'skynet-dacs-library';
 import { getSkylinkUrlForPortal } from 'skynet-js';
 import {
   mockHackerAvatar,
@@ -7,42 +7,43 @@ import {
   mockProfileAvatar,
   mockUserProfile,
 } from '../data/mockData';
+import _ from 'lodash'
 
 // Used in AuthButton.js
 export const useProfile = (userAuthStatus, isKernelLoaded) => {
   // Mock data to be replaced by DAC data
-  const userProfile = mockUserProfile;
-  const avatar = mockProfileAvatar;
+  // const userProfile = mockUserProfile;
+  // const avatar = mockProfileAvatar;
 
-  // const [userProfile, setUserProfile] = useState();
-  // const [avatar, setAvatar] = useState();
+  const [userProfile, setUserProfile] = useState();
+  const [avatar, setAvatar] = useState();
 
   // // Once logged in and kernelLoaded:
   // // Get userId and use it to fetch user's profile
   // // Using the profile, get a URL for accessing the profile image.
 
-  // useEffect(() => {
-  //   const getUserID = async () => {
-  //     try {
-  //       let identityDAC = new IdentityDAC();
-  //       const userID = await identityDAC.userID();
-  //       console.log(userID);
+  useEffect(() => {
+    const getUserID = async () => {
+      try {
+        let identityDAC = new IdentityDAC();
+        const userID = await identityDAC.userID();
+        console.log(userID);
 
-  //       let profileDAC = new ProfileDAC();
-  //       const result = await profileDAC.getProfile(userID);
-  //       console.log('got result from profile');
-  //       console.log(result);
-  //       setUserProfile(result);
-  //       setAvatar(avatarFieldToUrl(result?.avatar));
-  //     } catch (err) {
-  //       console.error({ err });
-  //     }
-  //   };
+        let profileDAC = new ProfileDAC();
+        const result = await profileDAC.getProfile(userID);
+        console.log('got result from profile');
+        console.log(result);
+        setUserProfile(result);
+        setAvatar(avatarFieldToUrl(result?.avatar));
+      } catch (err) {
+        console.error({ err });
+      }
+    };
 
-  //   if (userAuthStatus && isKernelLoaded) {
-  //     getUserID();
-  //   }
-  // }, [userAuthStatus, isKernelLoaded]);
+    if (userAuthStatus && isKernelLoaded) {
+      getUserID();
+    }
+  }, [userAuthStatus, isKernelLoaded]);
 
   return {
     userProfile, //current userProfile from ProfileDAC
@@ -64,18 +65,18 @@ export const getUserAvatar = async (userID) => {
 // Used in Hackers.js
 export const followUserList = async (userIds, extKey, extValue) => {
   // mock void return
-  return;
+  // return;
 
-  // const socialDAC = new SocialDAC();
+  const socialDAC = new SocialDAC();
 
-  // for (const userId of userIds) {
-  //   console.log('following: ', userId);
-  //   if (extKey && extValue) {
-  //     await socialDAC.follow(userId, { extKey: extValue });
-  //   } else {
-  //     await socialDAC.follow(userId);
-  //   }
-  // }
+  for (const userId of userIds) {
+    console.log('following: ', userId);
+    if (extKey && extValue) {
+      await socialDAC.follow(userId, { extKey: extValue });
+    } else {
+      await socialDAC.follow(userId);
+    }
+  }
 };
 
 // Used in IdeaFeed.js
@@ -85,15 +86,59 @@ export const useIdeasFeed = (userAuthStatus, isKernelLoaded) => {
   // Mock data to be replaced by DAC data
   // const ideasList = mockIdeas;
   // const loadingProgress = 100;
+  const profileDAC = new ProfileDAC();
 
-  // const [ideasList, setIdeasList] = useState([]);
-  const [userIdeaLists, setUserIdeaLists] = useState([]);
-  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [loadingProgress, setLoadingProgress] = useState(1);
+  const [loadedUsers, setLoadedUsers] = useState(0);
 
+  const getUserProfile = async (userId) => {
+    const profile = await profileDAC.getProfile(userId);
+    const username = profile?.username
+    const avatar = avatarFieldToUrl(profile?.avatar)
+
+    dispatchUserProfiles({userId, avatar, username})
+  }
+
+  const [userProfiles, dispatchUserProfiles] = useReducer((state, action) => {
+
+    const key = action.userId;
+    const value = {avatar: action.avatar, username:action.username}
+
+    return {...state, [key]: value}
+  }, {});
+
+  // dispatched called once per user's posts list
   const [ideasList, dispatchIdeasList] = useReducer((state, action) => {
-    const mergePostLists = [...state, ...action];
-    console.log(mergePostLists);
-    return mergePostLists;
+
+    // only fetch profile if we are showing posts
+    // separate reducer to not block anything
+    if (action.posts.length){
+      getUserProfile(action.posts[0].userId);
+    }
+
+    // take the FeedDAC's post and grab relevant data.
+    const postsToIdeas = action.posts.map((post)=>{
+
+      return   {
+        id: post.id, // sequential, unique per user, not globally unique
+        userId: post.userId,
+        title: post.content?.title,
+        text: post.content?.text,
+        ext: {
+          event: post.content.ext?.event,
+          prizeTrack: post.content.ext?.prizeTrack,
+          techStack: post.content.ext?.techStack,
+          seekingTeam: post.content.ext?.seekingTeam,
+        },
+        ts: post.ts,
+      }
+    })
+    console.log(postsToIdeas)
+    const mergePostLists = _.uniqBy([...state, ...postsToIdeas], "ts"); // id isn't uuid, so this should be refined for production
+    console.log(`mergedList after ${action.userId}:`, mergePostLists);
+    setLoadingProgress(((loadedUsers+1)/(hackerUserIds.length + 1))*100);
+    setLoadedUsers(loadedUsers+1);
+    return mergePostLists
   }, []);
 
   // Once logged in and kernelLoaded:
@@ -103,11 +148,9 @@ export const useIdeasFeed = (userAuthStatus, isKernelLoaded) => {
   useEffect(() => {
     const getIdeasList = async () => {
       try {
-        // let identityDAC = new IdentityDAC();
-        // const userId = await identityDAC.userID();
-
-        // const userList = [...hackerUserIds, userId];
-        const userList = hackerUserIds;
+        let identityDAC = new IdentityDAC();
+        const loggedInUser = await identityDAC.userID();
+        const userList = [loggedInUser, ...hackerUserIds ];
 
         let feedDAC = new FeedDAC();
 
@@ -115,8 +158,9 @@ export const useIdeasFeed = (userAuthStatus, isKernelLoaded) => {
           console.log('loading posts for user: ', userId);
           const posts = await feedDAC.loadPostsForUser(userId);
           console.log(posts);
-
-          dispatchIdeasList({ posts });
+          const ideas = posts.filter((post)=> post?.content?.ext?.event)
+          // const ideas = posts;
+          dispatchIdeasList({ posts: ideas, userId });
         }
       } catch (err) {
         console.error({ err });
@@ -129,8 +173,9 @@ export const useIdeasFeed = (userAuthStatus, isKernelLoaded) => {
   }, [userAuthStatus, isKernelLoaded]);
 
   return {
-    ideasList, //latest state of array of ideas
-    loadingProgress, //percentage of users loaded
+    ideasList,
+    loadingProgress,
+    userProfiles,
   };
 };
 
@@ -146,25 +191,25 @@ export const createPost = async ({
   seekingTeam,
 }) => {
   //mock return
-  return;
+  // return;
 
-  // const feedDAC = new FeedDAC();
+  const feedDAC = new FeedDAC();
 
-  // const post = {
-  //   title,
-  //   text,
-  //   ext: { event, prizeTrack, techStack, seekingTeam },
-  // };
+  const post = {
+    title,
+    text,
+    ext: { event, prizeTrack, techStack, seekingTeam },
+  };
 
-  // console.log(post);
+  console.log(post);
 
-  // let result;
-  // try {
-  //   result = await feedDAC.createPost(post);
-  //   console.log('Result: ', result);
-  // } catch (error) {
-  //   console.error({ error });
-  // }
+  let result;
+  try {
+    result = await feedDAC.createPost(post);
+    console.log('Result: ', result);
+  } catch (error) {
+    console.error({ error });
+  }
 };
 
 const SKYNET_PORTAL = 'https://siasky.net';
@@ -172,7 +217,11 @@ const SKYNET_PORTAL = 'https://siasky.net';
 // current Skynet Kernel doesn't handle downloading dataurls or creating preferred portal URLs
 // so here we use skynet-js to quickly construct URLs.
 const avatarFieldToUrl = (avatar) => {
-  return getSkylinkUrlForPortal(SKYNET_PORTAL, avatar[0].url);
+  if (avatar && avatar[0]?.url){
+    return getSkylinkUrlForPortal(SKYNET_PORTAL, avatar[0].url);
+  } else {
+    return '';
+  }
 };
 
 // Here we'll bootstrap by hard-coding userIDS (most users might not have a social graph yet.)
@@ -181,8 +230,9 @@ const avatarFieldToUrl = (avatar) => {
 
 // Used for useIdeaFeed and in Hackers.js
 export const hackerUserIds = [
+  'c6905fbde67575a8fbcb7c229a4f1169f2a35a29721802408fd227b103e789e6', //Delivator test
+  '050da969ae6761f8b6a92ab4e9ef587d8f12deaf8c1c07487711bd989320e55d', //Skunk_Ink test
   '93d487d5211d826c09e7faf56ca5e092d67dc7e8b9017e1d336eaeaf16e65236', //redsolver
-  // 'fd06ecf9d4adec6303461382225a294cc49e8eae542e1d8623dc271284e61cab', //dghelm demo
-  // 'c6905fbde67575a8fbcb7c229a4f1169f2a35a29721802408fd227b103e789e6', //Delivator test
-  // '050da969ae6761f8b6a92ab4e9ef587d8f12deaf8c1c07487711bd989320e55d', //Skunk_Ink test
+  'c3e1e5f4d032f931a91c1f396fa2ceb7347dbf80fe8b7360aa91bd6d4336da48', // Demo User, 2 idea, username and avatar
+  'bce426a6fc75204ea4e3edb4093090309a6d16e1442766fa12925f9a94d4e7b6', //Demo User with 2 Ideas
 ];

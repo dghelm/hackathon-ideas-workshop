@@ -50,7 +50,7 @@ const NewIdeaCard = (props) => {
       seekingTeam: seekingTeam ? 'true' : 'false',
     });
     setCreatingPost(false);
-    setTimeout(() => navigate('/'), 1000);
+    setTimeout(() => navigate('/'), 3000);
   };
 
   return (

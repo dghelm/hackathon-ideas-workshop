@@ -22,9 +22,8 @@ const Hackers = ({ userAuthStatus, isKernelLoaded }) => {
   useEffect(() => {
     const fetchHackerAvatars = async () => {
       for (const hackerUserId of hackerUserIds) {
-        // console.log('getting avatar: ', hackerUserId);
-        // const avatar = await getUserAvatar(hackerUserId);
-        const avatar = '';
+        const avatar = await getUserAvatar(hackerUserId);
+        // const avatar = '';
         dispatchHackerAvatars({ hackerUserId, avatar });
       }
     };
