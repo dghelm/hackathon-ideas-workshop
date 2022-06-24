@@ -24,7 +24,7 @@ export const mockIdeas = [
       techStack: ['skynet', 'react', 'ethersjs'],
       seekingTeam: true,
     },
-    ts: 0, // maybe we'll use postedAt instead
+    ts: 1234567890, // maybe we'll use postedAt instead
   },
   {
     id: 123456,
@@ -39,6 +39,6 @@ export const mockIdeas = [
       techStack: ['skynet', 'flutter'],
       seekingTeam: false,
     },
-    ts: 0, // maybe we'll use postedAt instead
+    ts: 424242424242, // maybe we'll use postedAt instead
   },
 ];

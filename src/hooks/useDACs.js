@@ -12,8 +12,10 @@ import _ from 'lodash'
 // Used in AuthButton.js
 export const useProfile = (userAuthStatus, isKernelLoaded) => {
   // Mock data to be replaced by DAC data
-  // const userProfile = mockUserProfile;
-  // const avatar = mockProfileAvatar;
+  return {
+    userProfile: mockUserProfile, //current userProfile from ProfileDAC
+    avatar: mockProfileAvatar, //current user's avatar URL
+  };
 
   const [userProfile, setUserProfile] = useState();
   const [avatar, setAvatar] = useState();
@@ -55,7 +57,7 @@ export const useProfile = (userAuthStatus, isKernelLoaded) => {
 // used in Hacker.js, where it maintains list and state
 export const getUserAvatar = async (userID) => {
   // return mock data for now.
-  // return mockHackerAvatar;
+  return mockHackerAvatar;
 
   let profileDAC = new ProfileDAC();
   const result = await profileDAC.getProfile(userID);
@@ -65,7 +67,7 @@ export const getUserAvatar = async (userID) => {
 // Used in Hackers.js
 export const followUserList = async (userIds, extKey, extValue) => {
   // mock void return
-  // return;
+  return;
 
   const socialDAC = new SocialDAC();
 
@@ -84,8 +86,13 @@ export const followUserList = async (userIds, extKey, extValue) => {
 // the standalone function of getUserAvatar and it use in Hackers.js
 export const useIdeasFeed = (userAuthStatus, isKernelLoaded) => {
   // Mock data to be replaced by DAC data
-  // const ideasList = mockIdeas;
-  // const loadingProgress = 100;
+  return {
+    ideasList: mockIdeas,
+    loadingProgress: 100,
+    userProfiles: {},
+  };
+
+
   const profileDAC = new ProfileDAC();
 
   const [loadingProgress, setLoadingProgress] = useState(1);
@@ -190,8 +197,9 @@ export const createPost = async ({
   techStack,
   seekingTeam,
 }) => {
+
   //mock return
-  // return;
+  return;
 
   const feedDAC = new FeedDAC();
 

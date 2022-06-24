@@ -25,7 +25,7 @@ const useKernelAuth = () => {
     // setBootloaderLoaded(true);
     // setUserAuthStatus(true);
     // setIsKernelLoaded(true);
-    // return;
+    return;
 
     await init();
     setBootloaderLoaded(true);
